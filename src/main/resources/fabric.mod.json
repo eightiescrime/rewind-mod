@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "id": "rewind",
+  "version": "${version}",
+  "name": "Rewind",
+  "description": "Личное время игрока: отматывается игрок, мир — никогда.",
+  "authors": ["eightiescrime"],
+  "contact": {
+    "sources": "https://github.com/eightiescrime/rewind-mod"
+  },
+  "license": "MIT",
+  "environment": "*",
+  "entrypoints": {
+    "main": ["io.github.eightiescrime.rewind.RewindMod"]
+  },
+  "depends": {
+    "fabricloader": ">=0.16.0",
+    "minecraft": "~1.21.1",
+    "java": ">=21",
+    "fabric-api": "*"
+  }
+}
