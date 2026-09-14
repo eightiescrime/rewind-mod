@@ -1,3 +1,15 @@
 {
-  "rewind.feedback.rewound": "Время соскальзнуло назад"
+  "rewind.feedback.rewound": "Время соскальзывает назад",
+  "rewind.feedback.level_up": "Хватка на времени крепнет — уровень %s",
+  "rewind.feedback.unlocked": "Что-то в тебе помнит мгновение, которое уже прошло",
+  "rewind.result.success": "Отмотано",
+  "rewind.result.disabled": "Отмотка отключена на этом сервере",
+  "rewind.result.dead": "Поздно",
+  "rewind.result.not_unlocked": "Время тебя не слушается",
+  "rewind.result.wrong_level": "Ещё нет — способность пока не в твоей власти",
+  "rewind.result.on_cooldown": "Время ещё не улеглось",
+  "rewind.result.no_energy": "Тратить нечего",
+  "rewind.result.no_buffer": "То мгновение уже потеряно",
+  "rewind.result.no_safe_snapshot": "Возвращаться некуда",
+  "rewind.result.too_deep": "Это дальше, чем ты дотягиваешься"
 }

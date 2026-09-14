@@ -1,3 +1,15 @@
 {
-  "rewind.feedback.rewound": "Time slips backward"
+  "rewind.feedback.rewound": "Time slips backward",
+  "rewind.feedback.level_up": "Your grip on time tightens — level %s",
+  "rewind.feedback.unlocked": "Something in you remembers a moment that has already passed",
+  "rewind.result.success": "Rewound",
+  "rewind.result.disabled": "Rewind is disabled on this server",
+  "rewind.result.dead": "Too late",
+  "rewind.result.not_unlocked": "You have no hold on time",
+  "rewind.result.wrong_level": "Not yet — the ability is not yours to command",
+  "rewind.result.on_cooldown": "Time has not settled yet",
+  "rewind.result.no_energy": "Nothing left to spend",
+  "rewind.result.no_buffer": "That moment is gone",
+  "rewind.result.no_safe_snapshot": "There is nowhere to return to",
+  "rewind.result.too_deep": "That is further than you can reach"
 }
