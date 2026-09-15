@@ -67,6 +67,11 @@ public final class DamageInterceptor {
 
             RewindResult result = RewindExecutor.rewind(player, config.autoRewindSeconds, ctx, false);
             if (!result.ok()) {
+                // запомнить, чего не хватило: если игрок сейчас умрёт, ему надо
+                // сказать причину, иначе он решит, что мод сломался
+                state.lastDenial = result;
+                state.lastDenialTicks = TemporalRules.secondsToTicks(config.denialMemorySeconds);
+
                 // время не удержало. Молчать здесь нельзя: удар был опасный,
                 // страховка не сработала, и без звука игрок решит, что мод сломан
                 if (config.soundEnabled && config.serverFeedbackEnabled) {

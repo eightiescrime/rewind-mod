@@ -5,6 +5,8 @@ import com.mojang.serialization.JsonOps;
 import io.github.eightiescrime.rewind.damage.TemporalDamageType;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -46,5 +48,18 @@ class TemporalStateTest {
         assertEquals(1, back.level);
         assertTrue(back.recentSources.isEmpty());
         assertEquals(0, back.fractureTicks);
+    }
+
+    @Test
+    void журнал_показывает_только_встреченное_и_по_нарастанию() {
+        TemporalState state = new TemporalState();
+        state.encounters.put(TemporalDamageType.EXPLOSION, 1);
+        state.encounters.put(TemporalDamageType.MELEE, 4);
+
+        assertEquals(List.of(TemporalDamageType.MELEE, TemporalDamageType.EXPLOSION),
+                state.journalThreats(),
+                "порядок объявления типов — это и есть порядок нарастания угрозы");
+        assertTrue(new TemporalState().journalThreats().isEmpty(),
+                "пустой журнал не рассказывает наперёд, что бывает дальше");
     }
 }

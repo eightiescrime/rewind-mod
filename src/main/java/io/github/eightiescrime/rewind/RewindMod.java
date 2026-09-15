@@ -3,6 +3,7 @@ package io.github.eightiescrime.rewind;
 import io.github.eightiescrime.rewind.command.RewindCommand;
 import io.github.eightiescrime.rewind.config.RewindConfig;
 import io.github.eightiescrime.rewind.damage.DamageInterceptor;
+import io.github.eightiescrime.rewind.item.RewindItems;
 import io.github.eightiescrime.rewind.network.RewindNetworking;
 import io.github.eightiescrime.rewind.persistence.TemporalAttachments;
 import io.github.eightiescrime.rewind.persistence.TemporalState;
@@ -17,6 +18,7 @@ import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,6 +49,7 @@ public final class RewindMod implements ModInitializer {
 
         RewindNetworking.register();
         RewindSounds.register();
+        RewindItems.register();
 
         ServerTickEvents.END_SERVER_TICK.register(TemporalManager.INSTANCE::tick);
         DamageInterceptor.register();
@@ -69,12 +72,32 @@ public final class RewindMod implements ModInitializer {
         });
 
         ServerLivingEntityEvents.AFTER_DEATH.register((entity, source) -> {
-            if (entity instanceof ServerPlayerEntity player && RewindConfig.get().deathClearsBuffer) {
-                TemporalManager.INSTANCE.clearBuffer(player);
+            if (entity instanceof ServerPlayerEntity player) {
+                explainDeath(player);
+                if (RewindConfig.get().deathClearsBuffer) {
+                    TemporalManager.INSTANCE.clearBuffer(player);
+                }
             }
         });
 
         LOGGER.info("Rewind: временное ядро инициализировано");
+    }
+
+    /**
+     * Сказать погибшему, чего не хватило способности.
+     *
+     * <p>Без этого смерть со способностью выглядит как поломка мода: игрок
+     * знает, что его должно было спасти, и не знает, почему не спасло.
+     */
+    private static void explainDeath(ServerPlayerEntity player) {
+        TemporalState state = TemporalAttachments.of(player);
+        if (!state.unlocked || state.lastDenial == null || !RewindConfig.get().serverFeedbackEnabled) {
+            return;
+        }
+        player.sendMessage(Text.translatable("rewind.feedback.death_hint",
+                Text.translatable(state.lastDenial.translationKey())), false);
+        state.lastDenial = null;
+        state.lastDenialTicks = 0;
     }
 
     private static void onJoin(ServerPlayerEntity player) {

@@ -76,6 +76,8 @@ public final class RewindConfig {
     public boolean soundEnabled = true;
     /** Как часто тикать, когда здоровья мало, а страховка ещё есть. 0 — не тикать. */
     public double nearRewindTickSeconds = 1.0;
+    /** Сколько помнить причину неудавшейся отмотки, чтобы назвать её после смерти. */
+    public double denialMemorySeconds = 8.0;
 
     public static RewindConfig get() {
         return instance;

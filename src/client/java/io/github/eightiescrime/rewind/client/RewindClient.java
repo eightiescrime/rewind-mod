@@ -1,5 +1,6 @@
 package io.github.eightiescrime.rewind.client;
 
+import io.github.eightiescrime.rewind.network.JournalPayload;
 import io.github.eightiescrime.rewind.network.RewindEffectPayload;
 import io.github.eightiescrime.rewind.network.TemporalStatePayload;
 import net.fabricmc.api.ClientModInitializer;
@@ -25,6 +26,10 @@ public final class RewindClient implements ClientModInitializer {
         ClientPlayNetworking.registerGlobalReceiver(RewindEffectPayload.ID,
                 (payload, context) -> context.client().execute(
                         () -> RewindEffects.accept(context.client(), payload)));
+
+        ClientPlayNetworking.registerGlobalReceiver(JournalPayload.ID,
+                (payload, context) -> context.client().execute(
+                        () -> context.client().setScreen(new JournalScreen(payload))));
 
         // при выходе из мира состояние клиента должно исчезнуть, иначе HUD
         // покажет чужие цифры, а силуэты — чужие отмотки на следующем сервере

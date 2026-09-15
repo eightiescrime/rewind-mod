@@ -111,6 +111,9 @@ public final class TemporalManager {
         if (state.fractureTicks > 0) {
             state.fractureTicks--;
         }
+        if (state.lastDenialTicks > 0 && --state.lastDenialTicks == 0) {
+            state.lastDenial = null;
+        }
         state.protection.tick();
 
         if (state.debtSeconds > 0) {

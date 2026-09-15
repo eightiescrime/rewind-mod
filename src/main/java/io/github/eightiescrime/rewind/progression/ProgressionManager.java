@@ -64,6 +64,7 @@ public final class ProgressionManager {
                                     DamageContext ctx, boolean firstEncounter) {
         RewindConfig config = RewindConfig.get();
         state.mastery += masteryGain(config, state, ctx.type(), ctx.sourceKey(), firstEncounter);
+        state.rescues.merge(ctx.type(), 1, Integer::sum);
         tryLevelUp(player, state);
         TemporalAttachments.markDirty(player, state);
     }

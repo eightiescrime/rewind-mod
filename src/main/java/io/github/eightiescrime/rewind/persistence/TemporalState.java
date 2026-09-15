@@ -3,10 +3,13 @@ package io.github.eightiescrime.rewind.persistence;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.eightiescrime.rewind.damage.TemporalDamageType;
+import io.github.eightiescrime.rewind.temporal.RewindResult;
 import io.github.eightiescrime.rewind.temporal.TemporalProtection;
 
+import java.util.Arrays;
 import java.util.EnumMap;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -34,6 +37,8 @@ public final class TemporalState {
 
     /** С какими угрозами игрок уже сталкивался — условие открытия уровней. */
     public final Map<TemporalDamageType, Integer> encounters = new EnumMap<>(TemporalDamageType.class);
+    /** От каких угроз способность уже спасала — это и пишется в журнал времени. */
+    public final Map<TemporalDamageType, Integer> rescues = new EnumMap<>(TemporalDamageType.class);
     /** Сколько раз конкретный источник уже давал мастерство с прошлого сброса. */
     public final Map<String, Integer> recentSources = new HashMap<>();
     /** Тиков до сброса убывающих множителей. */
@@ -41,6 +46,14 @@ public final class TemporalState {
 
     /** Не сохраняется: после перезахода защищать уже не от чего. */
     public final transient TemporalProtection protection = new TemporalProtection();
+
+    /**
+     * Почему отмотка не случилась в последний раз и сколько тиков об этом ещё
+     * помнить. Нужно, чтобы после смерти сказать игроку, чего не хватило,
+     * иначе он решит, что мод сломался.
+     */
+    public transient RewindResult lastDenial;
+    public transient int lastDenialTicks;
 
     public static final Codec<TemporalDamageType> TYPE_CODEC =
             Codec.STRING.xmap(TemporalDamageType::valueOf, TemporalDamageType::name);
@@ -56,6 +69,8 @@ public final class TemporalState {
             Codec.INT.optionalFieldOf("fractureTicks", 0).forGetter(s -> s.fractureTicks),
             Codec.unboundedMap(TYPE_CODEC, Codec.INT)
                     .optionalFieldOf("encounters", Map.of()).forGetter(s -> s.encounters),
+            Codec.unboundedMap(TYPE_CODEC, Codec.INT)
+                    .optionalFieldOf("rescues", Map.of()).forGetter(s -> s.rescues),
             Codec.unboundedMap(Codec.STRING, Codec.INT)
                     .optionalFieldOf("recentSources", Map.of()).forGetter(s -> s.recentSources),
             Codec.INT.optionalFieldOf("recentResetTicks", 0).forGetter(s -> s.recentResetTicks)
@@ -65,6 +80,7 @@ public final class TemporalState {
     private static TemporalState restore(boolean unlocked, int level, double mastery, double energy,
                                          double debtSeconds, int autoCooldown, int manualCooldown,
                                          int fractureTicks, Map<TemporalDamageType, Integer> encounters,
+                                         Map<TemporalDamageType, Integer> rescues,
                                          Map<String, Integer> recentSources, int recentResetTicks) {
         TemporalState state = new TemporalState();
         state.unlocked = unlocked;
@@ -76,6 +92,7 @@ public final class TemporalState {
         state.manualCooldown = manualCooldown;
         state.fractureTicks = fractureTicks;
         state.encounters.putAll(encounters);
+        state.rescues.putAll(rescues);
         state.recentSources.putAll(recentSources);
         state.recentResetTicks = recentResetTicks;
         return state;
@@ -87,5 +104,18 @@ public final class TemporalState {
 
     public boolean hasMet(TemporalDamageType type) {
         return encounters.containsKey(type);
+    }
+
+    /**
+     * Что уже попало в журнал времени: только встреченные угрозы, в порядке
+     * объявления типов — то есть по нарастанию.
+     *
+     * <p>Журнал не рассказывает наперёд, что бывает дальше: непройденных
+     * страниц в нём просто нет.
+     */
+    public List<TemporalDamageType> journalThreats() {
+        return Arrays.stream(TemporalDamageType.values())
+                .filter(type -> encounters.getOrDefault(type, 0) > 0)
+                .toList();
     }
 }
