@@ -57,6 +57,21 @@ public final class TemporalRules {
     }
 
     /**
+     * Пора ли предупреждать тиком: здоровья мало, но страховка ещё есть.
+     *
+     * <p>Тикать, когда отмотка всё равно не сработает, хуже, чем молчать:
+     * игрок расслабится и умрёт под звук, обещавший спасение. Поэтому здесь
+     * проверяется не только здоровье, но и энергия, кулдаун и перелом.
+     */
+    public static boolean nearRewind(RewindConfig config, double energy, int autoCooldown,
+                                     int fractureTicks, float healthPool, float maxHealth) {
+        if (energy < config.autoEnergyCost || autoCooldown > 0 || fractureTicks > 0) {
+            return false;
+        }
+        return healthPool <= maxHealth * config.dangerHealthPercent;
+    }
+
+    /**
      * ТЗ §36: один и тот же источник кормит всё хуже.
      *
      * @param timesSeenRecently сколько раз этот источник уже давал мастерство

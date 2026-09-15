@@ -15,5 +15,9 @@
   "rewind.hud.level": "Уровень %s",
   "rewind.hud.debt": "долг: %s с",
   "rewind.hud.cooldown": "не готово: %s с",
-  "rewind.hud.fracture": "перелом: %s с"
+  "rewind.hud.fracture": "перелом: %s с",
+  "subtitles.rewind.rewind_trigger": "Время срывается назад",
+  "subtitles.rewind.rewind_complete": "Время смыкается",
+  "subtitles.rewind.temporal_instability": "Время не удержало",
+  "subtitles.rewind.temporal_tick": "Время тикает рядом"
 }

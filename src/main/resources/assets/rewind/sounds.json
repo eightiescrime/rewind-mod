@@ -1,0 +1,31 @@
+{
+  "rewind_trigger": {
+    "subtitle": "subtitles.rewind.rewind_trigger",
+    "sounds": [
+      { "name": "minecraft:block/beacon/deactivate", "volume": 0.7, "pitch": 1.7 }
+    ]
+  },
+  "rewind_complete": {
+    "subtitle": "subtitles.rewind.rewind_complete",
+    "sounds": [
+      { "name": "minecraft:block/amethyst/resonate1", "volume": 0.45, "pitch": 1.3 },
+      { "name": "minecraft:block/amethyst/resonate2", "volume": 0.45, "pitch": 1.3 },
+      { "name": "minecraft:block/amethyst/resonate3", "volume": 0.45, "pitch": 1.3 },
+      { "name": "minecraft:block/amethyst/resonate4", "volume": 0.45, "pitch": 1.3 }
+    ]
+  },
+  "temporal_instability": {
+    "subtitle": "subtitles.rewind.temporal_instability",
+    "sounds": [
+      { "name": "minecraft:block/conduit/deactivate", "volume": 0.8, "pitch": 0.6 }
+    ]
+  },
+  "temporal_tick": {
+    "subtitle": "subtitles.rewind.temporal_tick",
+    "sounds": [
+      { "name": "minecraft:block/amethyst/step1", "volume": 0.25, "pitch": 1.8 },
+      { "name": "minecraft:block/amethyst/step5", "volume": 0.25, "pitch": 1.8 },
+      { "name": "minecraft:block/amethyst/step9", "volume": 0.25, "pitch": 1.8 }
+    ]
+  }
+}

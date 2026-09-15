@@ -4,7 +4,9 @@ import io.github.eightiescrime.rewind.config.RewindConfig;
 import io.github.eightiescrime.rewind.network.TemporalSync;
 import io.github.eightiescrime.rewind.persistence.TemporalAttachments;
 import io.github.eightiescrime.rewind.persistence.TemporalState;
+import io.github.eightiescrime.rewind.sound.RewindSounds;
 import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.sound.SoundCategory;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 
@@ -63,13 +65,40 @@ public final class TemporalManager {
             if (player.isSpectator() || !player.isAlive()) {
                 // в этих состояниях позиция ничего не значит, копить её вредно
                 clearBuffer(player);
-            } else if (captureThisTick) {
-                buffer(player).push(capture(player));
+            } else {
+                if (captureThisTick) {
+                    buffer(player).push(capture(player));
+                }
+                nearRewindTick(player, state, config, tickCounter);
             }
 
             TemporalAttachments.markDirty(player, state);
             TemporalSync.maybeSend(player, state, tickCounter);
         }
+    }
+
+    /**
+     * Едва слышный тик, когда здоровья мало, а страховка ещё есть.
+     *
+     * <p>Смысл в том, чтобы игрок чувствовал отмотку до удара, а не узнавал
+     * о ней постфактум. Тик звучит только тогда, когда отмотка действительно
+     * сработает: хватает энергии, нет кулдауна и нет перелома.
+     */
+    private static void nearRewindTick(ServerPlayerEntity player, TemporalState state,
+                                       RewindConfig config, long tick) {
+        if (!config.soundEnabled || !config.serverFeedbackEnabled || !state.unlocked) {
+            return;
+        }
+        int every = TemporalRules.secondsToTicks(config.nearRewindTickSeconds);
+        if (every <= 0 || tick % every != 0) {
+            return;
+        }
+        float pool = player.getHealth() + player.getAbsorptionAmount();
+        if (!TemporalRules.nearRewind(config, state.energy, state.autoCooldown,
+                state.fractureTicks, pool, player.getMaxHealth())) {
+            return;
+        }
+        player.playSoundToPlayer(RewindSounds.TEMPORAL_TICK, SoundCategory.PLAYERS, 1.0f, 1.0f);
     }
 
     private static void tickTimers(TemporalState state, RewindConfig config) {

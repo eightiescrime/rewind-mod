@@ -5,11 +5,13 @@ import io.github.eightiescrime.rewind.feedback.ServerFeedback;
 import io.github.eightiescrime.rewind.persistence.TemporalAttachments;
 import io.github.eightiescrime.rewind.persistence.TemporalState;
 import io.github.eightiescrime.rewind.progression.ProgressionManager;
+import io.github.eightiescrime.rewind.sound.RewindSounds;
 import io.github.eightiescrime.rewind.temporal.RewindExecutor;
 import io.github.eightiescrime.rewind.temporal.RewindResult;
 import io.github.eightiescrime.rewind.temporal.TemporalRules;
 import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.sound.SoundCategory;
 
 /**
  * Перехват урона до его применения (ТЗ §21).
@@ -65,7 +67,13 @@ public final class DamageInterceptor {
 
             RewindResult result = RewindExecutor.rewind(player, config.autoRewindSeconds, ctx, false);
             if (!result.ok()) {
-                return true;   // отмотка не вышла — урон проходит как обычно
+                // время не удержало. Молчать здесь нельзя: удар был опасный,
+                // страховка не сработала, и без звука игрок решит, что мод сломан
+                if (config.soundEnabled && config.serverFeedbackEnabled) {
+                    player.playSoundToPlayer(RewindSounds.TEMPORAL_INSTABILITY,
+                            SoundCategory.PLAYERS, 0.8f, 1.0f);
+                }
+                return true;   // урон проходит как обычно
             }
 
             ProgressionManager.rewardRewind(player, state, ctx, firstEncounter);

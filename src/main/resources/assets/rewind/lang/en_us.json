@@ -15,5 +15,9 @@
   "rewind.hud.level": "Level %s",
   "rewind.hud.debt": "debt: %ss",
   "rewind.hud.cooldown": "not ready: %ss",
-  "rewind.hud.fracture": "fracture: %ss"
+  "rewind.hud.fracture": "fracture: %ss",
+  "subtitles.rewind.rewind_trigger": "Time slips backwards",
+  "subtitles.rewind.rewind_complete": "Time closes over",
+  "subtitles.rewind.temporal_instability": "Time lets go",
+  "subtitles.rewind.temporal_tick": "Time ticks nearby"
 }

@@ -96,4 +96,22 @@ class TemporalRulesTest {
         assertEquals(4, TemporalRules.levelFor(c, 700, seen));
         assertEquals(5, TemporalRules.levelFor(c, 1400, seen));
     }
+
+    @Test
+    void тик_звучит_только_когда_страховка_действительно_есть() {
+        RewindConfig config = new RewindConfig();
+        float max = 20.0f;
+        float low = (float) (max * config.dangerHealthPercent);
+
+        assertTrue(TemporalRules.nearRewind(config, 100.0, 0, 0, low, max),
+                "здоровья мало, энергии хватает — тикаем");
+        assertFalse(TemporalRules.nearRewind(config, 100.0, 0, 0, max, max),
+                "здоровье полное — молчим");
+        assertFalse(TemporalRules.nearRewind(config, config.autoEnergyCost - 0.1, 0, 0, low, max),
+                "энергии не хватит на отмотку — обещать нечего");
+        assertFalse(TemporalRules.nearRewind(config, 100.0, 5, 0, low, max),
+                "идёт кулдаун — отмотки не будет");
+        assertFalse(TemporalRules.nearRewind(config, 100.0, 0, 5, low, max),
+                "перелом отнимает способность целиком");
+    }
 }

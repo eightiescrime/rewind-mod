@@ -74,6 +74,8 @@ public final class RewindConfig {
     public boolean grantOnFirstJoin = false;
     public boolean serverFeedbackEnabled = true;
     public boolean soundEnabled = true;
+    /** Как часто тикать, когда здоровья мало, а страховка ещё есть. 0 — не тикать. */
+    public double nearRewindTickSeconds = 1.0;
 
     public static RewindConfig get() {
         return instance;

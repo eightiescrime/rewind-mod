@@ -7,6 +7,7 @@ import io.github.eightiescrime.rewind.network.RewindNetworking;
 import io.github.eightiescrime.rewind.persistence.TemporalAttachments;
 import io.github.eightiescrime.rewind.persistence.TemporalState;
 import io.github.eightiescrime.rewind.progression.ProgressionManager;
+import io.github.eightiescrime.rewind.sound.RewindSounds;
 import io.github.eightiescrime.rewind.temporal.TemporalManager;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.entity.event.v1.ServerEntityWorldChangeEvents;
@@ -45,6 +46,7 @@ public final class RewindMod implements ModInitializer {
         RewindConfig.loadOrCreate(FabricLoader.getInstance().getConfigDir().resolve("rewind.json"));
 
         RewindNetworking.register();
+        RewindSounds.register();
 
         ServerTickEvents.END_SERVER_TICK.register(TemporalManager.INSTANCE::tick);
         DamageInterceptor.register();

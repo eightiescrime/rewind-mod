@@ -2,6 +2,7 @@ package io.github.eightiescrime.rewind.feedback;
 
 import io.github.eightiescrime.rewind.config.RewindConfig;
 import io.github.eightiescrime.rewind.network.RewindEffectPayload;
+import io.github.eightiescrime.rewind.sound.RewindSounds;
 import io.github.eightiescrime.rewind.temporal.RewindResult;
 import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
@@ -21,7 +22,6 @@ import net.minecraft.util.math.Vec3d;
  * поверх этого силуэт, серую пелену и рывок камеры, но ничего не заменяет —
  * игрок без мода по-прежнему понимает, что произошло.
  *
- * <p>ponytail: звук — ванильная заглушка, свои события приходят на этапе C.
  */
 public final class ServerFeedback {
 
@@ -41,8 +41,12 @@ public final class ServerFeedback {
         Vec3d to = player.getPos();
 
         if (config.soundEnabled) {
+            // звук уходит оттуда, где ударило, и приходит туда, где игрок
+            // оказался: пара, по которой отмотка слышна как движение
             world.playSound(null, from.x, from.y, from.z,
-                    SoundEvents.BLOCK_BEACON_DEACTIVATE, SoundCategory.PLAYERS, 0.6f, 1.6f);
+                    RewindSounds.REWIND_TRIGGER, SoundCategory.PLAYERS, 1.0f, 1.0f);
+            world.playSound(null, to.x, to.y, to.z,
+                    RewindSounds.REWIND_COMPLETE, SoundCategory.PLAYERS, 1.0f, 1.0f);
         }
 
         // временной след остаётся частицами, а не сущностью (RULE 5)
