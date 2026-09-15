@@ -21,6 +21,10 @@ public final class RewindClient implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
+        // клавиша должна встать в GameOptions до того, как те соберутся,
+        // поэтому регистрация идёт первой строкой и только отсюда
+        ManualTimeline.register();
+
         ClientPlayNetworking.registerGlobalReceiver(TemporalStatePayload.ID,
                 (payload, context) -> context.client().execute(() -> ClientTemporalState.accept(payload)));
 

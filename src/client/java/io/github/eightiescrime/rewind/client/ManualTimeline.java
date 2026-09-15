@@ -28,6 +28,15 @@ import org.lwjgl.glfw.GLFW;
  */
 public final class ManualTimeline {
 
+    /**
+     * Клавиша отмотки.
+     *
+     * <p>Регистрируется при первом обращении к классу, и обратиться надо
+     * вовремя: {@code KeyBindingHelper} принимает клавиши только до того, как
+     * соберутся {@code GameOptions}. Отсюда пустой {@link #register()} —
+     * его зовёт точка входа клиента, чтобы поле инициализировалось там,
+     * а не на первом тике, когда уже поздно.
+     */
     public static final KeyBinding KEY = KeyBindingHelper.registerKeyBinding(new KeyBinding(
             "key.rewind.manual", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_R, "key.categories.rewind"));
 
@@ -47,6 +56,10 @@ public final class ManualTimeline {
     private static int depth = 1;
 
     private ManualTimeline() {
+    }
+
+    /** Инициализация класса, а с ней и регистрация клавиши. */
+    public static void register() {
     }
 
     public static boolean isOpen() {
