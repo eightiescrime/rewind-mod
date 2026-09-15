@@ -17,8 +17,11 @@ import java.util.List;
  *
  * @param entries только те угрозы, с которыми игрок уже встречался, — журнал
  *                заполняется сам и не рассказывает наперёд, что бывает дальше
+ * @param manualRewinds сколько раз игрок вернулся сам: спасения и собственные
+ *                      возвраты — разные строки, и путать их нельзя
  */
-public record JournalPayload(int level, List<Entry> entries) implements CustomPayload {
+public record JournalPayload(int level, int manualRewinds,
+                             List<Entry> entries) implements CustomPayload {
 
     /** Одна строка журнала: встреченная угроза и сколько раз она не убила. */
     public record Entry(TemporalDamageType type, int rescues) {
@@ -31,7 +34,7 @@ public record JournalPayload(int level, List<Entry> entries) implements CustomPa
             CustomPayload.codecOf(JournalPayload::write, JournalPayload::new);
 
     private JournalPayload(PacketByteBuf buf) {
-        this(buf.readVarInt(), readEntries(buf));
+        this(buf.readVarInt(), buf.readVarInt(), readEntries(buf));
     }
 
     private static List<Entry> readEntries(PacketByteBuf buf) {
@@ -52,6 +55,7 @@ public record JournalPayload(int level, List<Entry> entries) implements CustomPa
 
     private void write(PacketByteBuf buf) {
         buf.writeVarInt(level);
+        buf.writeVarInt(manualRewinds);
         buf.writeVarInt(entries.size());
         for (Entry entry : entries) {
             buf.writeVarInt(entry.type().ordinal());

@@ -4,6 +4,7 @@ import io.github.eightiescrime.rewind.network.JournalPayload;
 import io.github.eightiescrime.rewind.network.RewindEffectPayload;
 import io.github.eightiescrime.rewind.network.TemporalStatePayload;
 import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
@@ -36,7 +37,10 @@ public final class RewindClient implements ClientModInitializer {
         ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> {
             ClientTemporalState.reset();
             RewindEffects.reset();
+            ManualTimeline.reset();
         });
+
+        ClientTickEvents.END_CLIENT_TICK.register(ManualTimeline::tick);
 
         HudRenderCallback.EVENT.register(TemporalHud::render);
         WorldRenderEvents.AFTER_ENTITIES.register(RewindEffects::render);

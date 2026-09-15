@@ -114,4 +114,21 @@ class TemporalRulesTest {
         assertFalse(TemporalRules.nearRewind(config, 100.0, 0, 5, low, max),
                 "перелом отнимает способность целиком");
     }
+
+    @Test
+    void шкала_ручной_отмотки_кончается_там_где_кончается_энергия() {
+        RewindConfig config = new RewindConfig();
+        // 40 базовых плюс 8 за секунду при сотне энергии — это ровно семь
+        // с половиной секунд, то есть семь целых засечек
+        assertEquals((int) config.manualMaxSeconds,
+                TemporalRules.affordableSeconds(config, config.maxEnergy),
+                "на полной энергии шкала доступна целиком");
+        assertEquals(0, TemporalRules.affordableSeconds(config, config.manualBaseCost),
+                "хватает только на базу — ни одной целой секунды не выбрать");
+        assertEquals(0, TemporalRules.affordableSeconds(config, 0.0),
+                "пустая энергия — пустая шкала");
+        assertEquals(2, TemporalRules.affordableSeconds(config,
+                        config.manualBaseCost + 2.9 * config.manualCostPerSecond),
+                "остаток отбрасывается: почти третья секунда — это всё ещё вторая");
+    }
 }

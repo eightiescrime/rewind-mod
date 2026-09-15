@@ -48,6 +48,7 @@ public final class RewindMod implements ModInitializer {
         RewindConfig.loadOrCreate(FabricLoader.getInstance().getConfigDir().resolve("rewind.json"));
 
         RewindNetworking.register();
+        RewindNetworking.registerServerReceivers();
         RewindSounds.register();
         RewindItems.register();
 

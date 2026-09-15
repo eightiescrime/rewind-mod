@@ -28,6 +28,26 @@ public final class TemporalRules {
     }
 
     /**
+     * До какой глубины игрок дотягивается прямо сейчас — в целых секундах.
+     *
+     * <p>Шкала ручной отмотки размечена посекундно, дробная глубина на ней
+     * всё равно не выбирается, поэтому остаток отбрасывается: показать
+     * доступной секунду, на которую не хватает энергии, — значит соврать.
+     *
+     * <p>Считается на сервере и уезжает клиенту уже готовым числом: раздавать
+     * клиенту стоимость и энергию в сыром виде — значит рассказывать, как
+     * подделать запрос (ТЗ §24).
+     */
+    public static int affordableSeconds(RewindConfig config, double energy) {
+        int ceiling = (int) config.manualMaxSeconds;
+        if (config.manualCostPerSecond <= 0.0) {
+            return energy >= config.manualBaseCost ? ceiling : 0;
+        }
+        double reach = (energy - config.manualBaseCost) / config.manualCostPerSecond;
+        return (int) Math.clamp(Math.floor(reach), 0, ceiling);
+    }
+
+    /**
      * ТЗ §8: долг замедляет восстановление энергии, но не останавливает его.
      * Это и есть предохранитель от цепочки «отмотался — восстановился — отмотался».
      */

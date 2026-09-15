@@ -43,5 +43,10 @@
   "rewind.threat.suffocation": "Теснота",
   "rewind.threat.cactus": "Шипы",
   "rewind.threat.environmental": "Окружение",
-  "rewind.threat.other": "Неизвестное"
+  "rewind.threat.other": "Неизвестное",
+  "key.categories.rewind": "Отмотка",
+  "key.rewind.manual": "Отмотать время",
+  "rewind.timeline.now": "сейчас",
+  "rewind.timeline.mark": "%s с",
+  "rewind.journal.returns": "вернулся сам: %s"
 }

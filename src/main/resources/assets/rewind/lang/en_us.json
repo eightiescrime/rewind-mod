@@ -43,5 +43,10 @@
   "rewind.threat.suffocation": "Crush",
   "rewind.threat.cactus": "Thorns",
   "rewind.threat.environmental": "Surroundings",
-  "rewind.threat.other": "The unknown"
+  "rewind.threat.other": "The unknown",
+  "key.categories.rewind": "Rewind",
+  "key.rewind.manual": "Rewind time",
+  "rewind.timeline.now": "now",
+  "rewind.timeline.mark": "%ss",
+  "rewind.journal.returns": "returned on your own: %s"
 }

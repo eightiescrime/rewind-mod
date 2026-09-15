@@ -52,7 +52,7 @@ public class TemporalJournalItem extends Item {
             return TypedActionResult.success(stack, false);
         }
 
-        ServerPlayNetworking.send(player, new JournalPayload(state.level, entries(state)));
+        ServerPlayNetworking.send(player, new JournalPayload(state.level, state.manualRewinds, entries(state)));
         return TypedActionResult.success(stack, false);
     }
 

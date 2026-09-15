@@ -36,7 +36,9 @@ public class JournalScreen extends Screen {
         renderBackground(context, mouseX, mouseY, delta);
 
         int rows = Math.max(1, journal.entries().size());
-        int height = PADDING * 2 + textRenderer.fontHeight * 2 + 6 + rows * LINE + 6 + textRenderer.fontHeight;
+        boolean returns = journal.manualRewinds() > 0;
+        int height = PADDING * 2 + textRenderer.fontHeight * 2 + 6 + rows * LINE + 6 + textRenderer.fontHeight
+                + (returns ? textRenderer.fontHeight + 1 : 0);
         int x = (width - WIDTH) / 2;
         int y = (this.height - height) / 2;
 
@@ -51,6 +53,15 @@ public class JournalScreen extends Screen {
         context.drawText(textRenderer,
                 Text.translatable("rewind.journal.grip", TemporalHud.roman(journal.level())),
                 textX, lineY, Parchment.argb(Parchment.INK_FADED, 1.0f), false);
+
+        if (returns) {
+            // собственные возвраты стоят отдельной строкой: спасли тебя или ты
+            // вернулся сам — в дневнике это разные записи
+            lineY += textRenderer.fontHeight + 1;
+            context.drawText(textRenderer,
+                    Text.translatable("rewind.journal.returns", journal.manualRewinds()),
+                    textX, lineY, Parchment.argb(Parchment.INK_FADED, 1.0f), false);
+        }
 
         lineY += textRenderer.fontHeight + 3;
         Parchment.rule(context, textX, lineY, inner, 1.0f);

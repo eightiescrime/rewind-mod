@@ -2,6 +2,7 @@ package io.github.eightiescrime.rewind.network;
 
 import io.github.eightiescrime.rewind.config.RewindConfig;
 import io.github.eightiescrime.rewind.persistence.TemporalState;
+import io.github.eightiescrime.rewind.temporal.TemporalRules;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.server.network.ServerPlayerEntity;
 
@@ -46,12 +47,17 @@ public final class TemporalSync {
         RewindConfig config = RewindConfig.get();
         int percent = (int) Math.round(100.0 * state.energy / Math.max(1.0, config.maxEnergy));
         float debt = Math.round(state.debtSeconds * 10.0) / 10.0f;
+        // ручная отмотка открывается последним уровнем (ТЗ §23): до него
+        // клиенту нечего рисовать, и шкала к нему просто не приезжает
+        boolean manual = state.unlocked && state.level >= config.maxLevel;
         return new TemporalStatePayload(
                 state.unlocked,
                 state.level,
                 Math.clamp(percent, 0, 100),
                 debt,
                 Math.max(state.autoCooldown, state.manualCooldown),
-                state.fractureTicks);
+                state.fractureTicks,
+                manual ? (int) config.manualMaxSeconds : 0,
+                manual ? TemporalRules.affordableSeconds(config, state.energy) : 0);
     }
 }

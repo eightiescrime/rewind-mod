@@ -39,6 +39,8 @@ public final class TemporalState {
     public final Map<TemporalDamageType, Integer> encounters = new EnumMap<>(TemporalDamageType.class);
     /** От каких угроз способность уже спасала — это и пишется в журнал времени. */
     public final Map<TemporalDamageType, Integer> rescues = new EnumMap<>(TemporalDamageType.class);
+    /** Сколько раз игрок вернулся сам, а не был спасён автоматикой (ТЗ §23). */
+    public int manualRewinds;
     /** Сколько раз конкретный источник уже давал мастерство с прошлого сброса. */
     public final Map<String, Integer> recentSources = new HashMap<>();
     /** Тиков до сброса убывающих множителей. */
@@ -54,6 +56,9 @@ public final class TemporalState {
      */
     public transient RewindResult lastDenial;
     public transient int lastDenialTicks;
+
+    /** Возраст игрока в тиках на момент последней просьбы об отмотке — заслонка от спама. */
+    public transient int lastManualRequestAge;
 
     public static final Codec<TemporalDamageType> TYPE_CODEC =
             Codec.STRING.xmap(TemporalDamageType::valueOf, TemporalDamageType::name);
@@ -73,7 +78,8 @@ public final class TemporalState {
                     .optionalFieldOf("rescues", Map.of()).forGetter(s -> s.rescues),
             Codec.unboundedMap(Codec.STRING, Codec.INT)
                     .optionalFieldOf("recentSources", Map.of()).forGetter(s -> s.recentSources),
-            Codec.INT.optionalFieldOf("recentResetTicks", 0).forGetter(s -> s.recentResetTicks)
+            Codec.INT.optionalFieldOf("recentResetTicks", 0).forGetter(s -> s.recentResetTicks),
+            Codec.INT.optionalFieldOf("manualRewinds", 0).forGetter(s -> s.manualRewinds)
     ).apply(instance, TemporalState::restore));
 
     /** Собирает состояние из сохранения. Используется только кодеком. */
@@ -81,7 +87,8 @@ public final class TemporalState {
                                          double debtSeconds, int autoCooldown, int manualCooldown,
                                          int fractureTicks, Map<TemporalDamageType, Integer> encounters,
                                          Map<TemporalDamageType, Integer> rescues,
-                                         Map<String, Integer> recentSources, int recentResetTicks) {
+                                         Map<String, Integer> recentSources, int recentResetTicks,
+                                         int manualRewinds) {
         TemporalState state = new TemporalState();
         state.unlocked = unlocked;
         state.level = level;
@@ -95,6 +102,7 @@ public final class TemporalState {
         state.rescues.putAll(rescues);
         state.recentSources.putAll(recentSources);
         state.recentResetTicks = recentResetTicks;
+        state.manualRewinds = manualRewinds;
         return state;
     }
 

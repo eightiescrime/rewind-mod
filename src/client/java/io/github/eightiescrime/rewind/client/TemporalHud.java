@@ -51,13 +51,20 @@ public final class TemporalHud {
                     argb(VEIL, veil * VEIL_MAX));
         }
 
+        TextRenderer font = client.textRenderer;
+        ManualTimeline.render(context, font);
+
+        // пока идёт выбор глубины, карточка нужна целиком: по ней и видно,
+        // сколько энергии останется
         float alpha = ClientTemporalState.alpha(now);
+        if (ManualTimeline.isOpen()) {
+            alpha = 1.0f;
+        }
         TemporalStatePayload state = ClientTemporalState.get();
         if (state == null || alpha <= 0.01f) {
             return;
         }
 
-        TextRenderer font = client.textRenderer;
         Text title = Text.translatable("rewind.hud.level", roman(state.level()));
         Text percent = Text.literal(state.energyPercent() + "%");
         Text note = note(state);
