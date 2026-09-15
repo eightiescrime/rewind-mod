@@ -1,10 +1,12 @@
 package io.github.eightiescrime.rewind.client;
 
+import io.github.eightiescrime.rewind.network.RewindEffectPayload;
 import io.github.eightiescrime.rewind.network.TemporalStatePayload;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
+import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
 
 /**
  * Точка входа клиентской части.
@@ -20,10 +22,18 @@ public final class RewindClient implements ClientModInitializer {
         ClientPlayNetworking.registerGlobalReceiver(TemporalStatePayload.ID,
                 (payload, context) -> context.client().execute(() -> ClientTemporalState.accept(payload)));
 
+        ClientPlayNetworking.registerGlobalReceiver(RewindEffectPayload.ID,
+                (payload, context) -> context.client().execute(
+                        () -> RewindEffects.accept(context.client(), payload)));
+
         // при выходе из мира состояние клиента должно исчезнуть, иначе HUD
-        // покажет чужие цифры на следующем сервере
-        ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> ClientTemporalState.reset());
+        // покажет чужие цифры, а силуэты — чужие отмотки на следующем сервере
+        ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> {
+            ClientTemporalState.reset();
+            RewindEffects.reset();
+        });
 
         HudRenderCallback.EVENT.register(TemporalHud::render);
+        WorldRenderEvents.AFTER_ENTITIES.register(RewindEffects::render);
     }
 }

@@ -35,6 +35,9 @@ public final class TemporalHud {
     private static final int BAR_FULL = 0x3E5C56;
     private static final int BAR_WAITING = 0x7A6B52;
     private static final int DEBT_INK = 0x6B3A2E;
+    /** Пелена в момент своей отмотки: кадр на миг теряет цвет. */
+    private static final int VEIL = 0x6E7370;
+    private static final float VEIL_MAX = 0.45f;
 
     private static final String[] ROMAN = {"I", "II", "III", "IV", "V"};
 
@@ -47,7 +50,18 @@ public final class TemporalHud {
             return;
         }
 
-        float alpha = ClientTemporalState.alpha(System.currentTimeMillis());
+        long now = System.currentTimeMillis();
+
+        // ponytail: пост-шейдер обесцвечивания в 1.21.1 публично не ставится,
+        // нужен миксин на GameRenderer. Серая пелена поверх кадра стоит три
+        // строки и читается так же.
+        float veil = RewindEffects.veil(now);
+        if (veil > 0.0f) {
+            context.fill(0, 0, context.getScaledWindowWidth(), context.getScaledWindowHeight(),
+                    argb(VEIL, veil * VEIL_MAX));
+        }
+
+        float alpha = ClientTemporalState.alpha(now);
         TemporalStatePayload state = ClientTemporalState.get();
         if (state == null || alpha <= 0.01f) {
             return;

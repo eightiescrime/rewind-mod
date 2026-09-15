@@ -13,5 +13,6 @@ public final class RewindNetworking {
 
     public static void register() {
         PayloadTypeRegistry.playS2C().register(TemporalStatePayload.ID, TemporalStatePayload.CODEC);
+        PayloadTypeRegistry.playS2C().register(RewindEffectPayload.ID, RewindEffectPayload.CODEC);
     }
 }

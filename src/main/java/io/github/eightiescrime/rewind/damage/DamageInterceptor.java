@@ -69,7 +69,7 @@ public final class DamageInterceptor {
             }
 
             ProgressionManager.rewardRewind(player, state, ctx, firstEncounter);
-            ServerFeedback.rewind(player, ctx);
+            ServerFeedback.rewind(player, ctx.position());
             return false;      // урон отменён, игрок уже в прошлом
         });
     }

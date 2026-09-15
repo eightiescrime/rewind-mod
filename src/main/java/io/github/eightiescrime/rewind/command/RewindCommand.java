@@ -5,6 +5,7 @@ import com.mojang.brigadier.arguments.DoubleArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import io.github.eightiescrime.rewind.config.RewindConfig;
+import io.github.eightiescrime.rewind.feedback.ServerFeedback;
 import io.github.eightiescrime.rewind.persistence.TemporalAttachments;
 import io.github.eightiescrime.rewind.persistence.TemporalState;
 import io.github.eightiescrime.rewind.progression.ProgressionManager;
@@ -18,6 +19,7 @@ import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
+import net.minecraft.util.math.Vec3d;
 
 /**
  * Отладочные команды (ТЗ §48).
@@ -118,7 +120,13 @@ public final class RewindCommand {
         double seconds = DoubleArgumentType.getDouble(ctx, "seconds");
         // проверки безопасности позиции остаются на месте: команда не должна
         // засунуть игрока в блок
+        Vec3d from = player.getPos();
         RewindResult result = RewindExecutor.rewind(player, seconds, null, true);
+        if (result.ok()) {
+            // команда должна показывать ровно то же, что и настоящая отмотка,
+            // иначе проверять эффекты нечем
+            ServerFeedback.rewind(player, from);
+        }
         return reply(ctx, "отмотка на " + seconds + " с: " + result.name());
     }
 
