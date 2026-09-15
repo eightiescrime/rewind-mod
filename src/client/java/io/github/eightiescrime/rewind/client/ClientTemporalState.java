@@ -42,9 +42,9 @@ public final class ClientTemporalState {
         return current;
     }
 
-    /** Есть ли о чём говорить: полная энергия без долгов и кулдаунов — молчим. */
+    /** Есть ли о чём говорить: полная энергия без шрама и кулдаунов — молчим. */
     private static boolean active(TemporalStatePayload state) {
-        return state.energyPercent() < 100 || state.debtSeconds() > 0.0f
+        return state.energyPercent() < 100 || state.scarPercent() > 0
                 || state.cooldownTicks() > 0 || state.fractureTicks() > 0;
     }
 

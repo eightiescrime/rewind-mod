@@ -11,8 +11,13 @@ import net.minecraft.network.packet.CustomPayload;
  *
  * <p>Клиент не получает ни буфера снимков, ни мастерства, ни списка встреч:
  * решения по-прежнему принимает только сервер, клиент лишь показывает итог
- * (ТЗ §30). Поля заранее огрублены — проценты вместо дробной энергии, десятые
- * доли секунды вместо точного долга, — чтобы пакет не менялся каждый тик.
+ * (ТЗ §30). Поля заранее огрублены — проценты вместо дробной энергии и вместо
+ * точного временного долга, — чтобы пакет не менялся каждый тик.
+ *
+ * @param scarPercent       временной шрам (ТЗ §57): накопленный долг в долях от
+ *                          потолка. Клиенту важна не величина долга в секундах,
+ *                          а насколько игрок «истёрт», — от этого числа зависит
+ *                          и строка на HUD, и порча кадра
  *
  * @param manualMaxSeconds  длина шкалы ручной отмотки; ноль означает, что
  *                          шкале взяться неоткуда — способность ещё не та
@@ -20,7 +25,7 @@ import net.minecraft.network.packet.CustomPayload;
  *                          дальше засечки рисуются бледными
  */
 public record TemporalStatePayload(boolean unlocked, int level, int energyPercent,
-                                   float debtSeconds, int cooldownTicks,
+                                   int scarPercent, int cooldownTicks,
                                    int fractureTicks, int manualMaxSeconds,
                                    int manualReachSeconds) implements CustomPayload {
 
@@ -32,7 +37,7 @@ public record TemporalStatePayload(boolean unlocked, int level, int energyPercen
 
     private TemporalStatePayload(PacketByteBuf buf) {
         this(buf.readBoolean(), buf.readVarInt(), buf.readVarInt(),
-                buf.readFloat(), buf.readVarInt(), buf.readVarInt(),
+                buf.readVarInt(), buf.readVarInt(), buf.readVarInt(),
                 buf.readVarInt(), buf.readVarInt());
     }
 
@@ -40,7 +45,7 @@ public record TemporalStatePayload(boolean unlocked, int level, int energyPercen
         buf.writeBoolean(unlocked);
         buf.writeVarInt(level);
         buf.writeVarInt(energyPercent);
-        buf.writeFloat(debtSeconds);
+        buf.writeVarInt(scarPercent);
         buf.writeVarInt(cooldownTicks);
         buf.writeVarInt(fractureTicks);
         buf.writeVarInt(manualMaxSeconds);

@@ -55,6 +55,7 @@ public final class RewindClient implements ClientModInitializer {
         ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> {
             ClientTemporalState.reset();
             RewindEffects.reset();
+            TemporalScar.reset();
             ManualTimeline.reset();
         });
 

@@ -38,9 +38,12 @@ dependencies {
     // только для компиляции: во время игры этих классов может не быть,
     // и трогает их единственный класс compat/AccessoriesRelic
     modCompileOnly "io.wispforest:accessories-fabric:${project.accessories_version}"
+    // а в дев-клиент мод ставится по-настоящему: слот реликвии надо видеть
+    // глазами. В собранный джарник эта зависимость не попадает
+    modLocalRuntime "io.wispforest:accessories-fabric:${project.accessories_version}"
 
-    // ClientTemporalState — чистая логика без единого класса Minecraft,
-    // поэтому её можно проверять обычным юнит-тестом
+    // ClientTemporalState и расчёт шрама — чистая логика без единого класса
+    // Minecraft, поэтому их можно проверять обычным юнит-тестом
     testImplementation sourceSets.client.output
 
     testImplementation platform('org.junit:junit-bom:5.11.4')

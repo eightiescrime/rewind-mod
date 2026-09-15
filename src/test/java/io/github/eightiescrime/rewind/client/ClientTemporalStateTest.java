@@ -11,11 +11,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class ClientTemporalStateTest {
 
     private static TemporalStatePayload calm() {
-        return new TemporalStatePayload(true, 3, 100, 0.0f, 0, 0, 7, 7);
+        return new TemporalStatePayload(true, 3, 100, 0, 0, 0, 7, 7);
     }
 
     private static TemporalStatePayload spent() {
-        return new TemporalStatePayload(true, 3, 60, 2.0f, 40, 0, 7, 2);
+        return new TemporalStatePayload(true, 3, 60, 20, 40, 0, 7, 2);
     }
 
     @BeforeEach
@@ -25,7 +25,7 @@ class ClientTemporalStateTest {
 
     @Test
     void молчит_пока_способность_не_открыта() {
-        ClientTemporalState.accept(new TemporalStatePayload(false, 1, 100, 0.0f, 0, 0, 0, 0));
+        ClientTemporalState.accept(new TemporalStatePayload(false, 1, 100, 0, 0, 0, 0, 0));
         assertEquals(0.0f, ClientTemporalState.alpha(1000L));
     }
 

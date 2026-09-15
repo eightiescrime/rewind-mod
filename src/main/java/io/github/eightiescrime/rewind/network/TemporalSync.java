@@ -46,7 +46,10 @@ public final class TemporalSync {
     private static TemporalStatePayload snapshot(TemporalState state) {
         RewindConfig config = RewindConfig.get();
         int percent = (int) Math.round(100.0 * state.energy / Math.max(1.0, config.maxEnergy));
-        float debt = Math.round(state.debtSeconds * 10.0) / 10.0f;
+        // временной шрам (ТЗ §57) — тот же самый долг, только в долях от потолка:
+        // второго счётчика под него не заводится, иначе он и тормозил бы
+        // восстановление энергии дважды
+        int scar = (int) Math.round(100.0 * state.debtSeconds / Math.max(1.0, config.maxDebtSeconds));
         // ручная отмотка открывается последним уровнем (ТЗ §23): до него
         // клиенту нечего рисовать, и шкала к нему просто не приезжает
         // первые секунды после разлома HUD молчит: сначала происходит,
@@ -57,7 +60,7 @@ public final class TemporalSync {
                 visible,
                 state.level,
                 Math.clamp(percent, 0, 100),
-                debt,
+                Math.clamp(scar, 0, 100),
                 Math.max(state.autoCooldown, state.manualCooldown),
                 state.fractureTicks,
                 manual ? (int) config.manualMaxSeconds : 0,

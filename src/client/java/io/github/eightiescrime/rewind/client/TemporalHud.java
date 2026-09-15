@@ -11,7 +11,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Locale;
 
 /**
- * Страница дневника в углу экрана: уровень, полоса энергии, долг.
+ * Страница дневника в углу экрана: уровень, полоса энергии, временной шрам.
  *
  * <p>Рисуется прямоугольниками — никаких своих текстур в репозитории не
  * заводится, и картинка остаётся пиксельной, без градиентов. Появляется только
@@ -51,6 +51,13 @@ public final class TemporalHud {
                     argb(VEIL, veil * VEIL_MAX));
         }
 
+        TemporalStatePayload state = ClientTemporalState.get();
+        if (state != null && state.unlocked()) {
+            // шрам живёт отдельно от карточки: карточка гаснет, когда всё
+            // улеглось, а истёртый кадр остаётся, пока долг не рассосётся
+            TemporalScar.render(context, state.scarPercent(), now);
+        }
+
         TextRenderer font = client.textRenderer;
         ManualTimeline.render(context, font);
 
@@ -60,7 +67,6 @@ public final class TemporalHud {
         if (ManualTimeline.isOpen()) {
             alpha = 1.0f;
         }
-        TemporalStatePayload state = ClientTemporalState.get();
         if (state == null || alpha <= 0.01f) {
             return;
         }
@@ -121,8 +127,8 @@ public final class TemporalHud {
         if (state.cooldownTicks() > 0) {
             return Text.translatable("rewind.hud.cooldown", seconds(state.cooldownTicks()));
         }
-        if (state.debtSeconds() > 0.0f) {
-            return Text.translatable("rewind.hud.debt", String.format(Locale.ROOT, "%.1f", state.debtSeconds()));
+        if (state.scarPercent() > 0) {
+            return Text.translatable("rewind.hud.scar", state.scarPercent());
         }
         return null;
     }

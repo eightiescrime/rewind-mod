@@ -13,7 +13,7 @@
   "rewind.result.no_safe_snapshot": "Возвращаться некуда",
   "rewind.result.too_deep": "Это дальше, чем ты дотягиваешься",
   "rewind.hud.level": "Уровень %s",
-  "rewind.hud.debt": "долг: %s с",
+  "rewind.hud.scar": "временной шрам: %s%%",
   "rewind.hud.cooldown": "не готово: %s с",
   "rewind.hud.fracture": "перелом: %s с",
   "subtitles.rewind.rewind_trigger": "Время срывается назад",
