@@ -54,6 +54,10 @@ public final class RewindCommand {
                         .then(CommandManager.argument("player", EntityArgumentType.player())
                                 .then(CommandManager.argument("value", DoubleArgumentType.doubleArg(0))
                                         .executes(RewindCommand::setMastery))))
+                .then(CommandManager.literal("scar")
+                        .then(CommandManager.argument("player", EntityArgumentType.player())
+                                .then(CommandManager.argument("percent", IntegerArgumentType.integer(0, 100))
+                                        .executes(RewindCommand::setScar))))
                 .then(CommandManager.literal("unlock")
                         .then(CommandManager.argument("player", EntityArgumentType.player())
                                 .executes(RewindCommand::unlock)))
@@ -115,6 +119,23 @@ public final class RewindCommand {
         return reply(ctx, "мастерство " + player.getGameProfile().getName() + " = " + state.mastery);
     }
 
+    /**
+     * Ставит временной шрам сразу нужной глубины (ТЗ §57).
+     *
+     * <p>Существует ради настройки картинки: набрать шрам честно — это
+     * несколько глубоких ручных отмоток подряд, а подобрать силу истирания
+     * кадра надо за один заход.
+     */
+    private static int setScar(CommandContext<ServerCommandSource> ctx) throws com.mojang.brigadier.exceptions.CommandSyntaxException {
+        ServerPlayerEntity player = EntityArgumentType.getPlayer(ctx, "player");
+        TemporalState state = TemporalAttachments.of(player);
+        int percent = IntegerArgumentType.getInteger(ctx, "percent");
+        state.debtSeconds = RewindConfig.get().maxDebtSeconds * percent / 100.0;
+        TemporalAttachments.markDirty(player, state);
+        return reply(ctx, "шрам " + player.getGameProfile().getName() + " = " + percent + " %"
+                + " (долг " + String.format("%.1f", state.debtSeconds) + " с)");
+    }
+
     private static int unlock(CommandContext<ServerCommandSource> ctx) throws com.mojang.brigadier.exceptions.CommandSyntaxException {
         ServerPlayerEntity player = EntityArgumentType.getPlayer(ctx, "player");
         TemporalState state = TemporalAttachments.of(player);
@@ -160,7 +181,9 @@ public final class RewindCommand {
                 .append(", уровень ").append(state.level).append('\n');
         sb.append("мастерство: ").append(String.format("%.1f", state.mastery)).append('\n');
         sb.append("энергия: ").append(String.format("%.1f/%.1f", state.energy, config.maxEnergy)).append('\n');
-        sb.append("долг: ").append(String.format("%.2f", state.debtSeconds)).append(" с\n");
+        int scar = (int) Math.round(100.0 * state.debtSeconds / Math.max(1.0, config.maxDebtSeconds));
+        sb.append("долг: ").append(String.format("%.2f", state.debtSeconds))
+                .append(" с (шрам ").append(scar).append(" %)\n");
         sb.append("кулдауны: авто ").append(state.autoCooldown)
                 .append(", ручной ").append(state.manualCooldown)
                 .append(", перелом ").append(state.fractureTicks).append('\n');

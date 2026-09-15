@@ -12,7 +12,9 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -160,6 +162,21 @@ public final class TemporalManager {
                 player.getAir(), player.getFireTicks(), player.getFrozenTicks(),
                 player.fallDistance, player.isOnGround(),
                 player.getInventory().selectedSlot,
-                player.getStatusEffects().stream().map(StatusEffectInstance::new).toList());
+                effectsOf(player));
+    }
+
+    /**
+     * Копия действующих эффектов — но только если они вообще есть.
+     *
+     * <p>Снимок берётся двадцать раз в секунду на каждого игрока, и поток
+     * с копиями на пустом списке — это мусор на ровном месте (ТЗ §53).
+     * У большинства игроков большую часть времени эффектов нет.
+     */
+    private static List<StatusEffectInstance> effectsOf(ServerPlayerEntity player) {
+        Collection<StatusEffectInstance> active = player.getStatusEffects();
+        if (active.isEmpty()) {
+            return List.of();
+        }
+        return active.stream().map(StatusEffectInstance::new).toList();
     }
 }
