@@ -4,6 +4,7 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.DoubleArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.context.CommandContext;
+import io.github.eightiescrime.rewind.block.RewindBlocks;
 import io.github.eightiescrime.rewind.config.RewindConfig;
 import io.github.eightiescrime.rewind.feedback.ServerFeedback;
 import io.github.eightiescrime.rewind.persistence.TemporalAttachments;
@@ -19,6 +20,7 @@ import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 
 /**
@@ -63,10 +65,26 @@ public final class RewindCommand {
                         .then(CommandManager.argument("player", EntityArgumentType.player())
                                 .then(CommandManager.argument("seconds", DoubleArgumentType.doubleArg(0.05, 60.0))
                                         .executes(RewindCommand::force))))
+                .then(CommandManager.literal("rift")
+                        .executes(RewindCommand::rift))
                 .then(CommandManager.literal("debug")
                         .requires(source -> source.hasPermissionLevel(3))
                         .then(CommandManager.argument("player", EntityArgumentType.player())
                                 .executes(RewindCommand::debug))));
+    }
+
+    /**
+     * Ставит зажжённый постамент под ноги.
+     *
+     * <p>Существует ради живой проверки: разлом в мире встречается раз на
+     * несколько сотен чанков, и ждать его, чтобы посмотреть на обретение
+     * способности, невозможно.
+     */
+    private static int rift(CommandContext<ServerCommandSource> ctx) {
+        ServerCommandSource source = ctx.getSource();
+        BlockPos pos = BlockPos.ofFloored(source.getPosition());
+        source.getWorld().setBlockState(pos, RewindBlocks.TEMPORAL_PEDESTAL.getDefaultState());
+        return reply(ctx, "постамент разлома поставлен на " + pos.toShortString());
     }
 
     private static int setLevel(CommandContext<ServerCommandSource> ctx) throws com.mojang.brigadier.exceptions.CommandSyntaxException {

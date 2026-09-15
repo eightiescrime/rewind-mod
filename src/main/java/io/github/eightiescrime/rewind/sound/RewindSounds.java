@@ -25,6 +25,10 @@ public final class RewindSounds {
     public static final SoundEvent TEMPORAL_INSTABILITY = register("temporal_instability");
     /** Едва слышный тик: здоровья мало, но страховка есть. */
     public static final SoundEvent TEMPORAL_TICK = register("temporal_tick");
+    /** Гул разлома: то, на что игрок идёт, ещё не зная, к чему идёт. */
+    public static final SoundEvent TEMPORAL_RIFT_HUM = register("temporal_rift_hum");
+    /** Редкий щелчок разлома — чтобы гул не превращался в фон. */
+    public static final SoundEvent TEMPORAL_RIFT_CLICK = register("temporal_rift_click");
 
     private RewindSounds() {
     }

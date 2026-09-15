@@ -25,6 +25,8 @@ loom {
 
 repositories {
     mavenCentral()
+    // Accessories — мягкая зависимость: слот для реликвии, если мод стоит
+    maven { url = "https://maven.wispforest.io" }
 }
 
 dependencies {
@@ -32,6 +34,10 @@ dependencies {
     mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
     modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
+
+    // только для компиляции: во время игры этих классов может не быть,
+    // и трогает их единственный класс compat/AccessoriesRelic
+    modCompileOnly "io.wispforest:accessories-fabric:${project.accessories_version}"
 
     // ClientTemporalState — чистая логика без единого класса Minecraft,
     // поэтому её можно проверять обычным юнит-тестом

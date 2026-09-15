@@ -1,6 +1,8 @@
 package io.github.eightiescrime.rewind.temporal;
 
+import io.github.eightiescrime.rewind.compat.AccessoriesRelic;
 import io.github.eightiescrime.rewind.config.RewindConfig;
+import io.github.eightiescrime.rewind.feedback.ServerFeedback;
 import io.github.eightiescrime.rewind.network.TemporalSync;
 import io.github.eightiescrime.rewind.persistence.TemporalAttachments;
 import io.github.eightiescrime.rewind.persistence.TemporalState;
@@ -60,7 +62,7 @@ public final class TemporalManager {
 
         for (ServerPlayerEntity player : server.getPlayerManager().getPlayerList()) {
             TemporalState state = TemporalAttachments.of(player);
-            tickTimers(state, config);
+            tickTimers(player, state, config);
 
             if (player.isSpectator() || !player.isAlive()) {
                 // в этих состояниях позиция ничего не значит, копить её вредно
@@ -101,7 +103,7 @@ public final class TemporalManager {
         player.playSoundToPlayer(RewindSounds.TEMPORAL_TICK, SoundCategory.PLAYERS, 1.0f, 1.0f);
     }
 
-    private static void tickTimers(TemporalState state, RewindConfig config) {
+    private static void tickTimers(ServerPlayerEntity player, TemporalState state, RewindConfig config) {
         if (state.autoCooldown > 0) {
             state.autoCooldown--;
         }
@@ -121,11 +123,19 @@ public final class TemporalManager {
                     state.debtSeconds - config.debtDecayPerSecond / TemporalRules.TICKS_PER_SECOND);
         }
 
+        // способность случилась молча, и вот теперь ей пора объясниться (ТЗ §38)
+        if (state.revealTicks > 0 && --state.revealTicks == 0) {
+            ServerFeedback.unlocked(player);
+        }
+
         // временной перелом временно отнимает способность целиком, включая
         // восстановление энергии (ТЗ §39)
         if (state.fractureTicks == 0 && state.energy < config.maxEnergy) {
-            state.energy = Math.min(config.maxEnergy,
-                    state.energy + TemporalRules.regenPerTick(config, state.debtSeconds));
+            double regen = TemporalRules.regenPerTick(config, state.debtSeconds);
+            if (AccessoriesRelic.wearing(player)) {
+                regen *= config.relicRegenMultiplier;
+            }
+            state.energy = Math.min(config.maxEnergy, state.energy + regen);
         }
 
         if (state.recentResetTicks > 0) {

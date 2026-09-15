@@ -48,5 +48,15 @@
   "key.rewind.manual": "Rewind time",
   "rewind.timeline.now": "now",
   "rewind.timeline.mark": "%ss",
-  "rewind.journal.returns": "returned on your own: %s"
+  "rewind.journal.returns": "returned on your own: %s",
+  "block.rewind.temporal_pedestal": "Rift Pedestal",
+  "item.rewind.temporal_relic": "Temporal Relic",
+  "item.rewind.temporal_compass": "Rift Compass",
+  "rewind.compass.silent": "The needle finds nothing — no rift is near",
+  "rewind.compass.found": "The needle settles: %s, %s",
+  "subtitles.rewind.temporal_rift_hum": "Something hums in the stone",
+  "subtitles.rewind.temporal_rift_click": "A click in the stone",
+  "item.rewind.temporal_relic.lore": "It was there when your time first slipped",
+  "item.rewind.temporal_relic.worn": "Worn: time comes back faster",
+  "item.rewind.temporal_relic.no_slot": "Nowhere to wear it: needs the Accessories mod"
 }

@@ -1,0 +1,6 @@
+{
+  "variants": {
+    "lit=true": { "model": "rewind:block/temporal_pedestal" },
+    "lit=false": { "model": "rewind:block/temporal_pedestal_dim" }
+  }
+}

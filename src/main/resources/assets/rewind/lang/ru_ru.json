@@ -48,5 +48,15 @@
   "key.rewind.manual": "Отмотать время",
   "rewind.timeline.now": "сейчас",
   "rewind.timeline.mark": "%s с",
-  "rewind.journal.returns": "вернулся сам: %s"
+  "rewind.journal.returns": "вернулся сам: %s",
+  "block.rewind.temporal_pedestal": "Постамент разлома",
+  "item.rewind.temporal_relic": "Временная реликвия",
+  "item.rewind.temporal_compass": "Компас разлома",
+  "rewind.compass.silent": "Стрелка не находит ничего — разлома рядом нет",
+  "rewind.compass.found": "Стрелка встала: %s, %s",
+  "subtitles.rewind.temporal_rift_hum": "Что-то гудит в камне",
+  "subtitles.rewind.temporal_rift_click": "Щелчок в камне",
+  "item.rewind.temporal_relic.lore": "Она была там, где твоё время впервые сорвалось",
+  "item.rewind.temporal_relic.worn": "Надетая — время возвращается быстрее",
+  "item.rewind.temporal_relic.no_slot": "Носить её негде: нужен мод Accessories"
 }

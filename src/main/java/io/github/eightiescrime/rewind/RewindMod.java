@@ -1,5 +1,6 @@
 package io.github.eightiescrime.rewind;
 
+import io.github.eightiescrime.rewind.block.RewindBlocks;
 import io.github.eightiescrime.rewind.command.RewindCommand;
 import io.github.eightiescrime.rewind.config.RewindConfig;
 import io.github.eightiescrime.rewind.damage.DamageInterceptor;
@@ -10,6 +11,7 @@ import io.github.eightiescrime.rewind.persistence.TemporalState;
 import io.github.eightiescrime.rewind.progression.ProgressionManager;
 import io.github.eightiescrime.rewind.sound.RewindSounds;
 import io.github.eightiescrime.rewind.temporal.TemporalManager;
+import io.github.eightiescrime.rewind.worldgen.RewindWorldgen;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.entity.event.v1.ServerEntityWorldChangeEvents;
 import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
@@ -51,6 +53,8 @@ public final class RewindMod implements ModInitializer {
         RewindNetworking.registerServerReceivers();
         RewindSounds.register();
         RewindItems.register();
+        RewindBlocks.register();
+        RewindWorldgen.register();
 
         ServerTickEvents.END_SERVER_TICK.register(TemporalManager.INSTANCE::tick);
         DamageInterceptor.register();
@@ -74,7 +78,7 @@ public final class RewindMod implements ModInitializer {
 
         ServerLivingEntityEvents.AFTER_DEATH.register((entity, source) -> {
             if (entity instanceof ServerPlayerEntity player) {
-                explainDeath(player);
+                onDeath(player);
                 if (RewindConfig.get().deathClearsBuffer) {
                     TemporalManager.INSTANCE.clearBuffer(player);
                 }
@@ -85,14 +89,22 @@ public final class RewindMod implements ModInitializer {
     }
 
     /**
-     * Сказать погибшему, чего не хватило способности.
+     * Что происходит со способностью в момент смерти.
      *
-     * <p>Без этого смерть со способностью выглядит как поломка мода: игрок
-     * знает, что его должно было спасти, и не знает, почему не спасло.
+     * <p>Во-первых, время ломается: несколько десятков секунд отмотки не будет
+     * вовсе (ТЗ §39). Во-вторых, погибшему говорят, чего не хватило, — без
+     * этого смерть со способностью выглядит как поломка мода: игрок знает,
+     * что его должно было спасти, и не знает, почему не спасло.
      */
-    private static void explainDeath(ServerPlayerEntity player) {
+    private static void onDeath(ServerPlayerEntity player) {
         TemporalState state = TemporalAttachments.of(player);
-        if (!state.unlocked || state.lastDenial == null || !RewindConfig.get().serverFeedbackEnabled) {
+        if (!state.unlocked) {
+            return;
+        }
+        // смерть не отнимает прогресс, но отнимает время (ТЗ §39)
+        ProgressionManager.fracture(player, state);
+
+        if (state.lastDenial == null || !RewindConfig.get().serverFeedbackEnabled) {
             return;
         }
         player.sendMessage(Text.translatable("rewind.feedback.death_hint",

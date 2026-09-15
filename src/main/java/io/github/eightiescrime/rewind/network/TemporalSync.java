@@ -49,9 +49,12 @@ public final class TemporalSync {
         float debt = Math.round(state.debtSeconds * 10.0) / 10.0f;
         // ручная отмотка открывается последним уровнем (ТЗ §23): до него
         // клиенту нечего рисовать, и шкала к нему просто не приезжает
-        boolean manual = state.unlocked && state.level >= config.maxLevel;
+        // первые секунды после разлома HUD молчит: сначала происходит,
+        // потом объясняется (ТЗ §38)
+        boolean visible = state.unlocked && state.revealTicks <= 0;
+        boolean manual = visible && state.level >= config.maxLevel;
         return new TemporalStatePayload(
-                state.unlocked,
+                visible,
                 state.level,
                 Math.clamp(percent, 0, 100),
                 debt,

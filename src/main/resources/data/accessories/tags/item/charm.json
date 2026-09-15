@@ -1,0 +1,6 @@
+{
+  "replace": false,
+  "values": [
+    { "id": "rewind:temporal_relic", "required": false }
+  ]
+}

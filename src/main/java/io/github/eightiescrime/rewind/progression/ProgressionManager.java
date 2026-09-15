@@ -82,13 +82,20 @@ public final class ProgressionManager {
         return true;
     }
 
+    /** Первое обретение способности (ТЗ §38) — сразу и с объяснением. */
+    public static boolean unlock(ServerPlayerEntity player, TemporalState state) {
+        return unlock(player, state, 0);
+    }
+
     /**
      * Первое обретение способности (ТЗ §38).
      *
-     * <p>Пока единственный путь сюда — команда оператора: Temporal Rift
-     * с реликвией придёт в седьмой фазе.
+     * <p>Путей сюда два: команда оператора объявляет способность немедленно,
+     * а разлом — молча. {@code quietTicks} задаёт паузу, в которую HUD ещё
+     * не показывается и ничего не сказано: у разлома игрок должен сперва
+     * пережить срыв во времени и только потом узнать, что это было.
      */
-    public static boolean unlock(ServerPlayerEntity player, TemporalState state) {
+    public static boolean unlock(ServerPlayerEntity player, TemporalState state, int quietTicks) {
         if (state.unlocked) {
             return false;
         }
@@ -96,8 +103,28 @@ public final class ProgressionManager {
         state.unlocked = true;
         state.level = Math.max(1, state.level);
         state.energy = config.maxEnergy;
-        ServerFeedback.unlocked(player);
+        state.revealTicks = quietTicks;
+        if (quietTicks <= 0) {
+            ServerFeedback.unlocked(player);
+        }
         TemporalAttachments.markDirty(player, state);
         return true;
+    }
+
+    /**
+     * Временной перелом (ТЗ §39).
+     *
+     * <p>Смерть не отнимает ни уровень, ни мастерство — она отнимает время.
+     * На несколько десятков секунд способность замолкает целиком: энергии нет,
+     * и она не восстанавливается. Прогресс при этом цел, поэтому наказание
+     * ощущается как откат дыхания, а не как потеря нажитого.
+     */
+    public static void fracture(ServerPlayerEntity player, TemporalState state) {
+        RewindConfig config = RewindConfig.get();
+        state.fractureTicks = TemporalRules.secondsToTicks(config.fractureSeconds);
+        state.energy = Math.min(state.energy, config.fractureEnergy);
+        state.autoCooldown = 0;
+        state.manualCooldown = 0;
+        TemporalAttachments.markDirty(player, state);
     }
 }

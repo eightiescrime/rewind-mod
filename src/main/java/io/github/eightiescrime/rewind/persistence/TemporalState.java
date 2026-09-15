@@ -60,6 +60,17 @@ public final class TemporalState {
     /** Возраст игрока в тиках на момент последней просьбы об отмотке — заслонка от спама. */
     public transient int lastManualRequestAge;
 
+    /**
+     * Сколько тиков ещё молчать о только что обретённой способности (ТЗ §38).
+     * Пока счётчик не дошёл до нуля, клиент считает способность незакрытой
+     * и не рисует HUD: сначала с игроком что-то происходит, и только потом
+     * ему это объясняют.
+     *
+     * <p>Не сохраняется: если игрок вышел ровно в эти несколько секунд, HUD
+     * просто появится сразу — ждать его после перезахода было бы страннее.
+     */
+    public transient int revealTicks;
+
     public static final Codec<TemporalDamageType> TYPE_CODEC =
             Codec.STRING.xmap(TemporalDamageType::valueOf, TemporalDamageType::name);
 
