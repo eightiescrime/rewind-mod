@@ -3,6 +3,7 @@ package io.github.eightiescrime.rewind;
 import io.github.eightiescrime.rewind.command.RewindCommand;
 import io.github.eightiescrime.rewind.config.RewindConfig;
 import io.github.eightiescrime.rewind.damage.DamageInterceptor;
+import io.github.eightiescrime.rewind.network.RewindNetworking;
 import io.github.eightiescrime.rewind.persistence.TemporalAttachments;
 import io.github.eightiescrime.rewind.persistence.TemporalState;
 import io.github.eightiescrime.rewind.progression.ProgressionManager;
@@ -42,6 +43,8 @@ public final class RewindMod implements ModInitializer {
     @Override
     public void onInitialize() {
         RewindConfig.loadOrCreate(FabricLoader.getInstance().getConfigDir().resolve("rewind.json"));
+
+        RewindNetworking.register();
 
         ServerTickEvents.END_SERVER_TICK.register(TemporalManager.INSTANCE::tick);
         DamageInterceptor.register();

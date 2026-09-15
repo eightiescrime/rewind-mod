@@ -11,5 +11,9 @@
   "rewind.result.no_energy": "Nothing left to spend",
   "rewind.result.no_buffer": "That moment is gone",
   "rewind.result.no_safe_snapshot": "There is nowhere to return to",
-  "rewind.result.too_deep": "That is further than you can reach"
+  "rewind.result.too_deep": "That is further than you can reach",
+  "rewind.hud.level": "Level %s",
+  "rewind.hud.debt": "debt: %ss",
+  "rewind.hud.cooldown": "not ready: %ss",
+  "rewind.hud.fracture": "fracture: %ss"
 }

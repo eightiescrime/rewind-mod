@@ -1,6 +1,7 @@
 package io.github.eightiescrime.rewind.temporal;
 
 import io.github.eightiescrime.rewind.config.RewindConfig;
+import io.github.eightiescrime.rewind.network.TemporalSync;
 import io.github.eightiescrime.rewind.persistence.TemporalAttachments;
 import io.github.eightiescrime.rewind.persistence.TemporalState;
 import net.minecraft.entity.effect.StatusEffectInstance;
@@ -44,6 +45,7 @@ public final class TemporalManager {
     /** Полностью забыть игрока: вызывается при выходе с сервера. */
     public void forget(ServerPlayerEntity player) {
         buffers.remove(player.getUuid());
+        TemporalSync.forget(player);
     }
 
     public void tick(MinecraftServer server) {
@@ -66,6 +68,7 @@ public final class TemporalManager {
             }
 
             TemporalAttachments.markDirty(player, state);
+            TemporalSync.maybeSend(player, state, tickCounter);
         }
     }
 

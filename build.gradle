@@ -9,6 +9,20 @@ base {
     archivesName = project.archives_base_name
 }
 
+loom {
+    // клиентский код живёт отдельно от серверного: на выделенном сервере
+    // классы из src/client никогда не грузятся, поэтому рендер и HUD физически
+    // не могут уронить сервер
+    splitEnvironmentSourceSets()
+
+    mods {
+        "rewind" {
+            sourceSet sourceSets.main
+            sourceSet sourceSets.client
+        }
+    }
+}
+
 repositories {
     mavenCentral()
 }
@@ -18,6 +32,10 @@ dependencies {
     mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
     modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
+
+    // ClientTemporalState — чистая логика без единого класса Minecraft,
+    // поэтому её можно проверять обычным юнит-тестом
+    testImplementation sourceSets.client.output
 
     testImplementation platform('org.junit:junit-bom:5.11.4')
     testImplementation 'org.junit.jupiter:junit-jupiter'

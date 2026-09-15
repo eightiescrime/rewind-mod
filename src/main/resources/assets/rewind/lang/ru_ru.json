@@ -11,5 +11,9 @@
   "rewind.result.no_energy": "Тратить нечего",
   "rewind.result.no_buffer": "То мгновение уже потеряно",
   "rewind.result.no_safe_snapshot": "Возвращаться некуда",
-  "rewind.result.too_deep": "Это дальше, чем ты дотягиваешься"
+  "rewind.result.too_deep": "Это дальше, чем ты дотягиваешься",
+  "rewind.hud.level": "Уровень %s",
+  "rewind.hud.debt": "долг: %s с",
+  "rewind.hud.cooldown": "не готово: %s с",
+  "rewind.hud.fracture": "перелом: %s с"
 }

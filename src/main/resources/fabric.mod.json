@@ -11,7 +11,8 @@
   "license": "MIT",
   "environment": "*",
   "entrypoints": {
-    "main": ["io.github.eightiescrime.rewind.RewindMod"]
+    "main": ["io.github.eightiescrime.rewind.RewindMod"],
+    "client": ["io.github.eightiescrime.rewind.client.RewindClient"]
   },
   "depends": {
     "fabricloader": ">=0.16.0",
